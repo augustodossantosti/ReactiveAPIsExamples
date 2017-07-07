@@ -5,13 +5,14 @@
  * Embraer S/A proprietary/confidential. Use is subject to license terms.
  */
 
-package br.com.poc.flyembraer.websocket.handler;
+package br.com.poc.flyembraer.domain;
+
+import org.springframework.integration.file.filters.AbstractFileListFilter;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.integration.file.filters.AbstractFileListFilter;
 
 /**
  * A classe {@link LastModifiedFileFilter} e responsavel por identificar modificacoes
@@ -20,6 +21,7 @@ import org.springframework.integration.file.filters.AbstractFileListFilter;
  * @author Daniel Silveira
  * @version 1.0 28/06/2017
  */
+@Component
 public class LastModifiedFileFilter extends AbstractFileListFilter<File> {
 
 	private final Map<String, Long> filesModification = new HashMap<>();

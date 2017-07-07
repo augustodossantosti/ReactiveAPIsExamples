@@ -47,7 +47,7 @@ function disconnect() {
 }
 
 function sendName() {
-	stompClientTwo.send("/app/hello", {}, JSON.stringify({'name': $("#name").val(), 'rename': $("#rename").val()}));
+	stompClientTwo.send("/app/hello", {}, JSON.stringify({'oldName': $("#oldName").val(), 'newName': $("#newName").val()}));
 }
 
 function showGreeting(message) {
@@ -56,7 +56,7 @@ function showGreeting(message) {
 
 function showReceivedMessage(message) {
 	var message = JSON.parse(message).content;
-    $("#greetings").append("<tr><td>File: " + message.name + " -> " + message.rename + "</td></tr>");
+    $("#greetings").append("<tr><td>File: " + message.oldName + " -> " + message.newName + "</td></tr>");
 }
 
 $(function () {

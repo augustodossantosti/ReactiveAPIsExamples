@@ -7,9 +7,8 @@
 
 package br.com.poc.flyembraer.config;
 
-import java.io.File;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.poc.flyembraer.domain.LastModifiedFileFilter;
+import br.com.poc.flyembraer.integration.websocket.transformer.FileTransformer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +25,7 @@ import org.springframework.integration.file.filters.SimplePatternFileListFilter;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.SubscribableChannel;
 
-import br.com.poc.flyembraer.websocket.handler.FileTransformer;
-import br.com.poc.flyembraer.websocket.handler.LastModifiedFileFilter;
+import java.io.File;
 
 /**
  * A classe {@link FileIntegrationBeans} define as configuracoes dos beans responsaveis
@@ -41,14 +39,6 @@ import br.com.poc.flyembraer.websocket.handler.LastModifiedFileFilter;
 @Configuration
 public class FileIntegrationBeans {
 
-	private final MessageHandler handler;	
-	
-	@Autowired
-	public FileIntegrationBeans(@Qualifier("webSocketHandler") final MessageHandler handler) {
-		super();
-		this.handler = handler;
-	}
-
 	@Bean
 	public SubscribableChannel filesChannel() {
 		return MessageChannels.publishSubscribe().get();
@@ -56,10 +46,11 @@ public class FileIntegrationBeans {
 
 	@Bean
 	@InboundChannelAdapter(value = "fileInputChannel", poller = @Poller(fixedRate = "1000"))
-	public MessageSource<File> fileReadingMessageSource(@Value("${input-dir:file://${HOME}/Imagens/in}") final File in) {
+	public MessageSource<File> fileReadingMessageSource(@Value("${input-dir:file://${HOME}/Imagens/in}") final File in,
+			@Qualifier("lastModifiedFileFilter") final LastModifiedFileFilter lastModifiedFileFilter) {
 		final CompositeFileListFilter<File> filters = new CompositeFileListFilter<>();
 		filters.addFilter(new SimplePatternFileListFilter("*.txt"));
-		filters.addFilter(new LastModifiedFileFilter());
+		filters.addFilter(lastModifiedFileFilter);
 		
 		final FileReadingMessageSource source = new FileReadingMessageSource();
 		source.setAutoCreateDirectory(true);
@@ -70,10 +61,12 @@ public class FileIntegrationBeans {
 	}
 
 	@Bean
-	public IntegrationFlow integrationFlow(@Qualifier("filesChannel") final SubscribableChannel filesChannel) {
+	public IntegrationFlow integrationFlow(@Qualifier("filesChannel") final SubscribableChannel filesChannel,
+			@Qualifier("fileTransformer") final FileTransformer fileTransformer,
+			@Qualifier("webSocketHandler") final MessageHandler handler) {
 		return IntegrationFlows
 				.from("fileInputChannel")
-				.transform(new FileTransformer())
+				.transform(fileTransformer)
 				.channel(filesChannel).handle(handler)
 				.get();
 	}

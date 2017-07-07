@@ -1,6 +1,7 @@
-package br.com.poc.flyembraer.websocket.handler;
+package br.com.poc.flyembraer.integration.websocket.transformer;
 
 import org.springframework.integration.file.transformer.AbstractFilePayloadTransformer;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  * @author Daniel Silveira
  * @version 1.0 28/06/2017
  */
+@Component
 public class FileTransformer extends AbstractFilePayloadTransformer<String> {
 
 	private final Charset charset = Charset.defaultCharset();

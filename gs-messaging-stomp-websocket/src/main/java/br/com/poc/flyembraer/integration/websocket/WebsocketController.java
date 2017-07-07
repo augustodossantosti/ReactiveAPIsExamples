@@ -4,15 +4,14 @@
  * Copyright (c) 2017, Focusnetworks. All rights reserved. Focusnetworks
  * proprietary/confidential. Use is subject to license terms.
  */
-package br.com.poc.flyembraer.websocket;
+package br.com.poc.flyembraer.integration.websocket;
 
+import br.com.poc.flyembraer.domain.FileWebsocketApplicationLayer;
+import br.com.poc.flyembraer.integration.websocket.wrapper.FileChangeNameWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-
-import br.com.poc.flyembraer.applicationlayer.FileWebsocketApplicationLayer;
-import br.com.poc.flyembraer.websocket.wrapper.FileChangeNameWrapper;
 
 /**
  * 
@@ -27,13 +26,14 @@ public class WebsocketController {
 	
 	@Autowired
 	public WebsocketController(FileWebsocketApplicationLayer fileWebsocketApplicationLayer) {
-		super();
 		this.fileWebsocketApplicationLayer = fileWebsocketApplicationLayer;
 	}
 
 	@MessageMapping("/hello")
     @SendTo("/change-file")
-    public FileChangeNameWrapper renameFile(final FileChangeName fileChangeName) throws Exception {
-        return new FileChangeNameWrapper(fileWebsocketApplicationLayer.rename(fileChangeName));
+    public FileChangeNameWrapper renameFile(final FileChangeNameWrapper fileChangeName) throws Exception {
+		fileWebsocketApplicationLayer.rename(fileChangeName.getOldName(), fileChangeName.getNewName());
+        return new FileChangeNameWrapper(fileChangeName.getOldName(), fileChangeName.getNewName());
     }
+
 }

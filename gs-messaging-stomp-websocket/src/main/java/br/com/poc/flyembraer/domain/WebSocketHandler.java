@@ -1,4 +1,4 @@
-package br.com.poc.flyembraer.websocket.handler;
+package br.com.poc.flyembraer.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -21,7 +21,6 @@ public class WebSocketHandler implements MessageHandler {
 	
 	@Autowired
 	public WebSocketHandler(final SimpMessagingTemplate template) {
-		super();
 		this.template = template;
 	}
 
